@@ -7,6 +7,10 @@ datasource db {
   provider = "postgresql"
 }
 
+// ============================================
+// Authentication (better-auth)
+// ============================================
+
 model account {
   id                    String    @id
   accountId             String
@@ -41,15 +45,19 @@ model session {
 }
 
 model user {
-  id            String    @id
+  id            String        @id
   name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false)
+  email         String        @unique
+  emailVerified Boolean       @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
+  role          UserRole      @default(PARENT)
+  createdAt     DateTime      @default(now())
   updatedAt     DateTime
   account       account[]
   session       session[]
+  subscription  Subscription?
+  children      Child[]
+  tutor         Tutor?
 }
 
 model verification {
@@ -61,4 +69,198 @@ model verification {
   updatedAt  DateTime
 
   @@index([identifier])
+}
+
+enum UserRole {
+  PARENT
+  TUTOR
+  ADMIN
+}
+
+// ============================================
+// Subscription System
+// ============================================
+
+model Subscription {
+  id                    String            @id @default(cuid())
+  userId                String            @unique
+  tier                  SubscriptionTier  @default(FREE)
+  status                SubscriptionStatus @default(ACTIVE)
+  vnpayTokenKey         String?           @unique  // VNPay recurring payment token
+  vnpayTransactionId    String?                    // Latest transaction ID
+  currentPeriodStart    DateTime?
+  currentPeriodEnd      DateTime?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  
+  user                  user              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+enum SubscriptionTier {
+  FREE
+  BASIC
+  PREMIUM
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+  TRIALING
+}
+
+// ============================================
+// Children & Spirit Animals
+// ============================================
+
+model Child {
+  id              String         @id @default(cuid())
+  userId          String
+  name            String
+  grade           Int            // 6-12
+  birthYear       Int
+  spiritAnimalId  String
+  xp              Int            @default(0)
+  level           Int            @default(1)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  user            user           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  spiritAnimal    SpiritAnimal   @relation(fields: [spiritAnimalId], references: [id])
+  chatSessions    ChatSession[]
+  dailyUsage      DailyUsage[]
+  bookings        Booking[]
+  analysis        ChildAnalysis?
+
+  @@index([userId])
+  @@index([spiritAnimalId])
+}
+
+model SpiritAnimal {
+  id          String   @id @default(cuid())
+  name        String   // "Rồng", "Phượng Hoàng", "Rùa", "Hổ", "Kỳ Lân"
+  slug        String   @unique // "dragon", "phoenix", "turtle", "tiger", "unicorn"
+  personality String[] // ["analytical", "independent"]
+  description String   @db.Text
+  color       String   // Primary color hex
+  imageUrl    String?
+  
+  children    Child[]
+}
+
+model DailyUsage {
+  id              String   @id @default(cuid())
+  childId         String
+  date            String   // YYYY-MM-DD format
+  questionsAsked  Int      @default(0)
+  createdAt       DateTime @default(now())
+  
+  child           Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+  
+  @@unique([childId, date])
+  @@index([childId])
+}
+
+model ChildAnalysis {
+  id                String   @id @default(cuid())
+  childId           String   @unique
+  traits            String[] // ["curious", "analytical", "creative"]
+  favoriteSubjects  String[] // ["Toán", "Vật lý", "Hóa học"]
+  learningStyle     String?  // "visual", "auditory", "kinesthetic", "reading"
+  lastAnalyzedAt    DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  child             Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+}
+
+// ============================================
+// AI Chat System
+// ============================================
+
+model ChatSession {
+  id          String    @id @default(cuid())
+  childId     String
+  title       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  child       Child     @relation(fields: [childId], references: [id], onDelete: Cascade)
+  messages    Message[]
+
+  @@index([childId])
+}
+
+model Message {
+  id            String      @id @default(cuid())
+  sessionId     String
+  role          MessageRole
+  content       String      @db.Text
+  audioUrl      String?
+  createdAt     DateTime    @default(now())
+  
+  session       ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+// ============================================
+// Tutor Marketplace
+// ============================================
+
+model Tutor {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  subjects        String[]  // ["Toán", "Vật lý", "Hóa học"]
+  grades          Int[]     // [6, 7, 8, 9]
+  hourlyRate      Int       // VND
+  bio             String    @db.Text
+  rating          Float     @default(0)
+  totalSessions   Int       @default(0)
+  bankAccount     String?   // For manual payouts
+  verified        Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  user            user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookings        Booking[]
+
+  @@index([userId])
+}
+
+model Booking {
+  id                 String        @id @default(cuid())
+  childId            String
+  tutorId            String
+  scheduledAt        DateTime
+  durationMinutes    Int           // 60, 90, 120
+  totalAmount        Int           // VND
+  platformFee        Int           // 20% of totalAmount
+  status             BookingStatus @default(PENDING)
+  vnpayTransactionId String?       // VNPay payment transaction ID
+  notes              String?       @db.Text
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  
+  child              Child         @relation(fields: [childId], references: [id])
+  tutor              Tutor         @relation(fields: [tutorId], references: [id])
+
+  @@index([childId])
+  @@index([tutorId])
+  @@index([scheduledAt])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  REFUNDED
 }
