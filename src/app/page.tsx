@@ -1,12 +1,14 @@
 import Client from '@/components/Client'
+import { requireAuth } from '@/lib/auth-utils'
 import { cn } from '@/lib/utils'
-import { caller, getQueryClient, trpc } from '@/trpc/server'
+import { getQueryClient, trpc } from '@/trpc/server'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import React, { Suspense } from 'react'
 
 const Page = async () => {
-  const queryClient = getQueryClient()
+  await requireAuth()
 
+  const queryClient = getQueryClient()
   void queryClient.prefetchQuery(trpc.getUsers.queryOptions())
 
   return (

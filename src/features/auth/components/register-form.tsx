@@ -36,7 +36,6 @@ export function RegisterForm() {
     })
 
     const onSubmit = async (values: RegisterFormValues) => {
-        console.log({ values })
         await authClient.signUp.email({
             email: values.email,
             password: values.password,
@@ -47,8 +46,7 @@ export function RegisterForm() {
                 router.push("/")
             },
             onError: (ctx) => {
-                console.log({ ctx })
-                toast.error(ctx.error.message)
+                toast.error(ctx.error.error)
             }
         })
     }

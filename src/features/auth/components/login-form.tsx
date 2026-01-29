@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import Link from "next/link"
+import { authClient } from "@/lib/auth-client"
+import { toast } from "sonner"
 
 const loginSchema = z.object({
     email: z.string().email("Invalid email address"),
@@ -29,7 +31,18 @@ export function LoginForm() {
     })
 
     const onSubmit = async (values: LoginFormValues) => {
-        console.log({ values })
+        await authClient.signIn.email({
+            email: values.email,
+            password: values.password,
+            callbackURL: "/"
+        }, {
+            onSuccess: () => {
+                router.push("/")
+            },
+            onError: (ctx) => {
+                toast.error(ctx.error.error)
+            }
+        })
     }
 
     const isPending = form.formState.isSubmitting
