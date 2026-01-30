@@ -1,15 +1,15 @@
-import { LoginForm } from "@/features/auth/components/login-form"
-import { requireUnauth } from "@/lib/auth-utils"
-import type { Metadata } from "next"
+import type { Metadata } from "next";
+import { LoginForm } from "@/features/auth/components/login-form";
+import { requireUnauth } from "@/lib/auth-utils";
 
 export const metadata: Metadata = {
-    title: "Sign In - StillRead",
-    description: "Sign in to your StillRead account to continue reading",
-}
+  title: "Đăng Nhập - FunnyLearn",
+  description: "Đăng nhập vào tài khoản FunnyLearn để tiếp tục học",
+};
 
 export const Page = async () => {
-    await requireUnauth()
-    return <LoginForm />
-}
+  await requireUnauth();
+  return <LoginForm />;
+};
 
-export default Page
+export default Page;

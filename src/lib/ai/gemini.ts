@@ -1,19 +1,19 @@
-import { google } from '@ai-sdk/google';
+import { google } from "@ai-sdk/google";
 
-export const geminiModel = google('gemini-2.0-flash-exp');
+export const geminiModel = google("gemini-2.0-flash-exp");
 
 export interface SocraticPromptOptions {
-    spiritAnimalName: string;
-    grade: number;
-    childName: string;
+  spiritAnimalName: string;
+  grade: number;
+  childName: string;
 }
 
 export function createSocraticSystemPrompt({
-    spiritAnimalName,
-    grade,
-    childName,
+  spiritAnimalName,
+  grade,
+  childName,
 }: SocraticPromptOptions): string {
-    return `Bạn là ${spiritAnimalName}, một linh thú thông minh và thân thiện đang đồng hành cùng ${childName}, học sinh lớp ${grade}.
+  return `Bạn là ${spiritAnimalName}, một linh thú thông minh và thân thiện đang đồng hành cùng ${childName}, học sinh lớp ${grade}.
 
 ## Nguyên tắc Socratic Method (BẮT BUỘC)
 - **KHÔNG BAO GIỜ** đưa đáp án trực tiếp cho bài tập
@@ -23,7 +23,7 @@ export function createSocraticSystemPrompt({
 
 ## Phong cách giao tiếp
 - Nhiệt tình, động viên, luôn tích cực
-- Sử dụng ví dụ gần gũi với độ tuổi ${grade > 9 ? 'THPT' : 'THCS'}
+- Sử dụng ví dụ gần gũi với độ tuổi ${grade > 9 ? "THPT" : "THCS"}
 - Giải thích bằng tiếng Việt đơn giản, dễ hiểu
 - Thêm emoji phù hợp để tạo không khí vui vẻ 🎯✨
 
@@ -42,24 +42,24 @@ Hãy là người bạn đồng hành đáng tin cậy trên hành trình học 
 }
 
 export const SPIRIT_ANIMAL_PERSONALITIES = {
-    dragon: {
-        traits: ['analytical', 'independent', 'logical'],
-        tone: 'Nghiêm túc nhưng hài hước, thích thách thức trí tuệ',
-    },
-    phoenix: {
-        traits: ['curious', 'social', 'creative'],
-        tone: 'Nhiệt tình, năng động, thích khám phá mới mẻ',
-    },
-    turtle: {
-        traits: ['patient', 'methodical', 'reading-focused'],
-        tone: 'Bình tĩnh, chu đáo, giải thích từng bước cẩn thận',
-    },
-    tiger: {
-        traits: ['energetic', 'kinesthetic', 'competitive'],
-        tone: 'Mạnh mẽ, thích thực hành, động viên qua thử thách',
-    },
-    unicorn: {
-        traits: ['balanced', 'visual', 'artistic'],
-        tone: 'Nhẹ nhàng, sáng tạo, thích dùng hình ảnh minh họa',
-    },
+  dragon: {
+    traits: ["analytical", "independent", "logical"],
+    tone: "Nghiêm túc nhưng hài hước, thích thách thức trí tuệ",
+  },
+  phoenix: {
+    traits: ["curious", "social", "creative"],
+    tone: "Nhiệt tình, năng động, thích khám phá mới mẻ",
+  },
+  turtle: {
+    traits: ["patient", "methodical", "reading-focused"],
+    tone: "Bình tĩnh, chu đáo, giải thích từng bước cẩn thận",
+  },
+  tiger: {
+    traits: ["energetic", "kinesthetic", "competitive"],
+    tone: "Mạnh mẽ, thích thực hành, động viên qua thử thách",
+  },
+  unicorn: {
+    traits: ["balanced", "visual", "artistic"],
+    tone: "Nhẹ nhàng, sáng tạo, thích dùng hình ảnh minh họa",
+  },
 } as const;
