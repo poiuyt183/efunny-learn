@@ -58,9 +58,166 @@ const spiritAnimals = [
   },
 ];
 
-async function main() {
-  console.log("🌱 Seeding Spirit Animals...");
+const tutors = [
+  {
+    email: "tutor1@example.com",
+    name: "Nguyễn Văn An",
+    subjects: ["Toán", "Vật lý"],
+    grades: [10, 11, 12],
+    hourlyRate: 300000,
+    bio: "Tốt nghiệp loại Giỏi Đại học Bách Khoa, chuyên dạy Toán và Vật lý cho học sinh THPT. Có 5 năm kinh nghiệm giảng dạy, đã giúp nhiều học sinh đạt điểm cao trong kỳ thi THPT Quốc gia. Phương pháp giảng dạy tập trung vào việc hiểu bản chất và áp dụng linh hoạt kiến thức.",
+    bankAccount: "VCB - 1234567890 - Nguyen Van An",
+    certificates: [
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample1", name: "Bằng Đại học Bách Khoa" }),
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample2", name: "Chứng chỉ sư phạm" }),
+    ],
+    rating: 4.8,
+    totalSessions: 45,
+  },
+  {
+    email: "tutor2@example.com",
+    name: "Trần Thị Bình",
+    subjects: ["Tiếng Anh"],
+    grades: [6, 7, 8, 9, 10, 11, 12],
+    hourlyRate: 350000,
+    bio: "IELTS 8.0, tốt nghiệp chuyên ngành Ngôn ngữ Anh tại ĐH Ngoại ngữ. Có 7 năm kinh nghiệm dạy IELTS và Tiếng Anh học thuật. Phương pháp giảng dạy tập trung vào giao tiếp thực tế và luyện thi hiệu quả. Đã giúp hơn 100 học sinh đạt điểm IELTS mục tiêu.",
+    bankAccount: "Techcombank - 9876543210 - Tran Thi Binh",
+    certificates: [
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample3", name: "IELTS 8.0" }),
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample4", name: "TESOL Certificate" }),
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample5", name: "Bằng Cử nhân Ngôn ngữ Anh" }),
+    ],
+    rating: 4.9,
+    totalSessions: 89,
+  },
+  {
+    email: "tutor3@example.com",
+    name: "Lê Minh Châu",
+    subjects: ["Hóa học", "Sinh học"],
+    grades: [10, 11, 12],
+    hourlyRate: 280000,
+    bio: "Tốt nghiệp Đại học Y Hà Nội, chuyên dạy Hóa học và Sinh học cho học sinh THPT. Có kinh nghiệm 4 năm, đặc biệt giỏi trong việc giải thích các khái niệm phức tạp một cách dễ hiểu. Nhiều học sinh đạt điểm 9-10 trong kỳ thi THPT.",
+    bankAccount: "Vietcombank - 1122334455 - Le Minh Chau",
+    certificates: [
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample6", name: "Bằng Dược sĩ" }),
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample7", name: "Giấy khen Sinh viên 5 tốt" }),
+    ],
+    rating: 4.7,
+    totalSessions: 32,
+  },
+  {
+    email: "tutor4@example.com",
+    name: "Phạm Đức Duy",
+    subjects: ["Toán"],
+    grades: [6, 7, 8, 9],
+    hourlyRate: 250000,
+    bio: "Giáo viên Toán THCS với 6 năm kinh nghiệm. Tốt nghiệp Sư phạm Toán, đặc biệt giỏi trong việc xây dựng nền tảng Toán vững chắc cho học sinh. Phương pháp giảng dạy vui vẻ, gần gũi, giúp học sinh yêu thích môn Toán.",
+    bankAccount: "ACB - 5566778899 - Pham Duc Duy",
+    certificates: [
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample8", name: "Bằng Sư phạm Toán" }),
+    ],
+    rating: 4.6,
+    totalSessions: 56,
+  },
+  {
+    email: "tutor5@example.com",
+    name: "Hoàng Thị Lan",
+    subjects: ["Văn học", "Lịch sử"],
+    grades: [10, 11, 12],
+    hourlyRate: 270000,
+    bio: "Thạc sĩ Văn học Việt Nam, 8 năm kinh nghiệm dạy Ngữ văn và Lịch sử. Chuyên hướng dẫn kỹ năng làm bài văn nghị luận, phân tích tác phẩm văn học. Đã giúp nhiều học sinh đạt điểm cao môn Văn trong kỳ thi THPT.",
+    bankAccount: "BIDV - 3344556677 - Hoang Thi Lan",
+    certificates: [
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample9", name: "Bằng Thạc sĩ Văn học" }),
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample10", name: "Giải Nhì Nghiên cứu khoa học" }),
+    ],
+    rating: 4.8,
+    totalSessions: 67,
+  },
+  {
+    email: "tutor6@example.com",
+    name: "Vũ Quang Hải",
+    subjects: ["Vật lý", "Toán"],
+    grades: [11, 12],
+    hourlyRate: 320000,
+    bio: "Giảng viên Đại học Khoa học Tự nhiên, chuyên dạy Vật lý và Toán nâng cao. 10 năm kinh nghiệm, nhiều học sinh đỗ các trường top như Bách Khoa, ĐH Quốc gia. Phương pháp giảng dạy logic, hệ thống, tập trung vào tư duy giải quyết vấn đề.",
+    bankAccount: "MB Bank - 7788990011 - Vu Quang Hai",
+    certificates: [
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample11", name: "Bằng Thạc sĩ Vật lý" }),
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample12", name: "Chứng chỉ Giảng viên xuất sắc" }),
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample13", name: "Giải Nhất Olympic Vật lý" }),
+    ],
+    rating: 4.9,
+    totalSessions: 103,
+  },
+  {
+    email: "tutor7@example.com",
+    name: "Đặng Thu Hà",
+    subjects: ["Tiếng Anh", "Tiếng Việt"],
+    grades: [6, 7, 8, 9],
+    hourlyRate: 260000,
+    bio: "Cử nhân Sư phạm Tiếng Anh, IELTS 7.5. Chuyên dạy Tiếng Anh giao tiếp và Tiếng Việt cho học sinh THCS. 5 năm kinh nghiệm, phương pháp giảng dạy sinh động, tương tác cao. Giúp học sinh tự tin giao tiếp và yêu thích học ngoại ngữ.",
+    bankAccount: "VPBank - 2233445566 - Dang Thu Ha",
+    certificates: [
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample14", name: "IELTS 7.5" }),
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample15", name: "Bằng Sư phạm Tiếng Anh" }),
+    ],
+    rating: 4.7,
+    totalSessions: 41,
+  },
+  {
+    email: "tutor8@example.com",
+    name: "Bùi Văn Kiên",
+    subjects: ["Tin học", "Toán"],
+    grades: [10, 11, 12],
+    hourlyRate: 290000,
+    bio: "Kỹ sư Công nghệ Thông tin, tốt nghiệp Bách Khoa Hà Nội. Dạy Tin học cơ bản, lập trình và Toán tin. 4 năm kinh nghiệm, đã hướng dẫn học sinh đạt giải trong các kỳ thi HSG Tin học. Phương pháp thực hành kết hợp lý thuyết.",
+    bankAccount: "Agribank - 9988776655 - Bui Van Kien",
+    certificates: [
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample16", name: "Bằng Kỹ sư CNTT" }),
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample17", name: "Chứng chỉ Python" }),
+    ],
+    rating: 4.6,
+    totalSessions: 28,
+  },
+  {
+    email: "tutor9@example.com",
+    name: "Ngô Thị Mai",
+    subjects: ["Hóa học"],
+    grades: [10, 11, 12],
+    hourlyRate: 310000,
+    bio: "Thạc sĩ Hóa học, giảng viên Đại học Sư phạm. 9 năm kinh nghiệm dạy Hóa học THPT và ôn thi THPT Quốc gia. Chuyên sâu về Hóa hữu cơ và Hóa vô cơ. Phương pháp giảng dạy rõ ràng, dễ nhớ với nhiều mẹo ghi nhớ hiệu quả.",
+    bankAccount: "Sacombank - 4455667788 - Ngo Thi Mai",
+    certificates: [
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample18", name: "Bằng Thạc sĩ Hóa học" }),
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample19", name: "Chứng chỉ Giảng viên" }),
+    ],
+    rating: 4.8,
+    totalSessions: 78,
+  },
+  {
+    email: "tutor10@example.com",
+    name: "Trịnh Quốc Anh",
+    subjects: ["Toán", "Vật lý", "Hóa học"],
+    grades: [10, 11, 12],
+    hourlyRate: 340000,
+    bio: "Giáo viên dạy kèm chuyên nghiệp với 12 năm kinh nghiệm. Tốt nghiệp Sư phạm Toán-Lý-Hóa loại Xuất sắc. Đã giúp hơn 200 học sinh đạt điểm cao trong kỳ thi THPT và đỗ các trường đại học danh tiếng. Phương pháp giảng dạy tổng hợp, bám sát chương trình.",
+    bankAccount: "VietinBank - 6677889900 - Trinh Quoc Anh",
+    certificates: [
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample20", name: "Bằng Sư phạm Toán-Lý-Hóa" }),
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample21", name: "Giáo viên xuất sắc 2023" }),
+      JSON.stringify({ url: "https://drive.google.com/file/d/sample22", name: "Chứng chỉ Quản lý giáo dục" }),
+    ],
+    rating: 5.0,
+    totalSessions: 156,
+  },
+];
 
+async function main() {
+  console.log("🌱 Seeding database...");
+
+  // Seed Spirit Animals
+  console.log("\n📚 Seeding Spirit Animals...");
   for (const animal of spiritAnimals) {
     const created = await prisma.spiritAnimal.upsert({
       where: { slug: animal.slug },
@@ -70,7 +227,59 @@ async function main() {
     console.log(`✅ Created/Updated: ${created.name} (${created.slug})`);
   }
 
-  console.log("✨ Seed completed!");
+  // Seed Tutors
+  console.log("\n👨‍🏫 Seeding Tutors...");
+  for (const tutorData of tutors) {
+    // Create or get user
+    const user = await prisma.user.upsert({
+      where: { email: tutorData.email },
+      update: {
+        name: tutorData.name,
+        role: "TUTOR",
+        updatedAt: new Date(),
+      },
+      create: {
+        id: `tutor_${tutorData.email.split("@")[0]}`,
+        email: tutorData.email,
+        name: tutorData.name,
+        emailVerified: true,
+        role: "TUTOR",
+        updatedAt: new Date(),
+      },
+    });
+
+    // Create tutor profile
+    const tutor = await prisma.tutor.upsert({
+      where: { userId: user.id },
+      update: {
+        subjects: tutorData.subjects,
+        grades: tutorData.grades,
+        hourlyRate: tutorData.hourlyRate,
+        bio: tutorData.bio,
+        bankAccount: tutorData.bankAccount,
+        certificates: tutorData.certificates,
+        rating: tutorData.rating,
+        totalSessions: tutorData.totalSessions,
+        verified: true,
+      },
+      create: {
+        userId: user.id,
+        subjects: tutorData.subjects,
+        grades: tutorData.grades,
+        hourlyRate: tutorData.hourlyRate,
+        bio: tutorData.bio,
+        bankAccount: tutorData.bankAccount,
+        certificates: tutorData.certificates,
+        rating: tutorData.rating,
+        totalSessions: tutorData.totalSessions,
+        verified: true,
+      },
+    });
+
+    console.log(`✅ Created/Updated: ${user.name} - ${tutor.subjects.join(", ")}`);
+  }
+
+  console.log("\n✨ Seed completed!");
 }
 
 main()

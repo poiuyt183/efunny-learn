@@ -56,7 +56,8 @@ model user {
   account       account[]
   session       session[]
   subscription  Subscription?
-  children      Child[]
+  children      Child[]       @relation("ParentChildren")
+  childProfile  Child?        @relation("ChildAccount")
   tutor         Tutor?
 }
 
@@ -73,6 +74,7 @@ model verification {
 
 enum UserRole {
   PARENT
+  CHILD
   TUTOR
   ADMIN
 }
@@ -117,7 +119,8 @@ enum SubscriptionStatus {
 
 model Child {
   id              String         @id @default(cuid())
-  userId          String
+  userId          String         // Parent's user ID
+  childUserId     String?        @unique // Child's own user account (optional)
   name            String
   grade           Int            // 6-12
   birthYear       Int
@@ -127,7 +130,8 @@ model Child {
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   
-  user            user           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            user           @relation("ParentChildren", fields: [userId], references: [id], onDelete: Cascade)
+  childUser       user?          @relation("ChildAccount", fields: [childUserId], references: [id], onDelete: SetNull)
   spiritAnimal    SpiritAnimal   @relation(fields: [spiritAnimalId], references: [id])
   chatSessions    ChatSession[]
   dailyUsage      DailyUsage[]
@@ -135,6 +139,7 @@ model Child {
   analysis        ChildAnalysis?
 
   @@index([userId])
+  @@index([childUserId])
   @@index([spiritAnimalId])
 }
 
@@ -225,6 +230,7 @@ model Tutor {
   rating          Float     @default(0)
   totalSessions   Int       @default(0)
   bankAccount     String?   // For manual payouts
+  certificates    String[]  @default([]) // URLs of certificate images
   verified        Boolean   @default(false)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt

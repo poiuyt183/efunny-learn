@@ -1,104 +1,148 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { requireAuth } from "@/lib/auth-utils";
-import { authClient } from "@/lib/auth-client";
-import { SignoutButton } from "@/features/auth/components/signout-button";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { Card } from "@/components/ui/card";
+import {
+  Users,
+  CreditCard,
+  GraduationCap,
+  Calendar,
+  TrendingUp,
+} from "lucide-react";
 
-export default async function ParentDashboard() {
-  const session = await requireAuth();
+export default async function DashboardPage() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  // Check if user is parent
-  if (session.user.role !== "PARENT") {
-    redirect("/");
+  if (!session?.user) {
+    redirect("/login");
+  }
+
+  // Redirect based on role
+  if (session.user.role === "TUTOR") {
+    redirect("/tutor/dashboard");
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Xin chào, {session.user.name}!
-            </h1>
-            <SignoutButton />
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
+      {/* Welcome Section */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">Chào mừng trở lại!</h1>
+        <p className="text-muted-foreground">
+          Quản lý con cái, đăng ký gia sư và theo dõi tiến độ học tập
+        </p>
+      </div>
+
+      {/* Main Navigation Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {/* Children Management */}
+        <Link href="/dashboard/children">
+          <Card className="p-6 hover:shadow-lg transition-all cursor-pointer group">
+            <div className="flex items-start mb-4">
+              <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div className="ml-4 flex-1">
+                <h3 className="font-semibold text-lg mb-1">Quản lý con</h3>
+                <p className="text-sm text-muted-foreground">
+                  Theo dõi tiến độ học tập của con bạn
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center text-sm font-medium text-primary group-hover:translate-x-1 transition-transform">
+              Xem chi tiết →
+            </div>
+          </Card>
+        </Link>
+
+        {/* Subscription */}
+        <Link href="/dashboard/subscription">
+          <Card className="p-6 hover:shadow-lg transition-all cursor-pointer group">
+            <div className="flex items-start mb-4">
+              <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                <CreditCard className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+              </div>
+              <div className="ml-4 flex-1">
+                <h3 className="font-semibold text-lg mb-1">Gói đăng ký</h3>
+                <p className="text-sm text-muted-foreground">
+                  Quản lý gói subscription của bạn
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center text-sm font-medium text-primary group-hover:translate-x-1 transition-transform">
+              Xem chi tiết →
+            </div>
+          </Card>
+        </Link>
+
+        {/* Find Tutors */}
+        <Link href="/dashboard/tutors">
+          <Card className="p-6 hover:shadow-lg transition-all cursor-pointer group">
+            <div className="flex items-start mb-4">
+              <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                <GraduationCap className="h-6 w-6 text-green-600 dark:text-green-400" />
+              </div>
+              <div className="ml-4 flex-1">
+                <h3 className="font-semibold text-lg mb-1">Tìm gia sư</h3>
+                <p className="text-sm text-muted-foreground">
+                  Kết nối với gia sư phù hợp
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center text-sm font-medium text-primary group-hover:translate-x-1 transition-transform">
+              Xem chi tiết →
+            </div>
+          </Card>
+        </Link>
+
+        {/* My Bookings */}
+        <Link href="/dashboard/bookings">
+          <Card className="p-6 hover:shadow-lg transition-all cursor-pointer group">
+            <div className="flex items-start mb-4">
+              <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                <Calendar className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+              </div>
+              <div className="ml-4 flex-1">
+                <h3 className="font-semibold text-lg mb-1">Lịch học</h3>
+                <p className="text-sm text-muted-foreground">
+                  Quản lý các buổi học đã đặt
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center text-sm font-medium text-primary group-hover:translate-x-1 transition-transform">
+              Xem chi tiết →
+            </div>
+          </Card>
+        </Link>
+      </div>
+
+      {/* Quick Stats */}
+      <Card className="p-6">
+        <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
+          <TrendingUp className="h-5 w-5" />
+          Thống kê nhanh
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="text-center p-4 bg-muted/50 rounded-lg">
+            <div className="text-3xl font-bold text-blue-600 mb-1">0</div>
+            <p className="text-sm text-muted-foreground">Profiles con</p>
+          </div>
+          <div className="text-center p-4 bg-muted/50 rounded-lg">
+            <div className="text-3xl font-bold text-purple-600 mb-1">FREE</div>
+            <p className="text-sm text-muted-foreground">Gói hiện tại</p>
+          </div>
+          <div className="text-center p-4 bg-muted/50 rounded-lg">
+            <div className="text-3xl font-bold text-green-600 mb-1">0</div>
+            <p className="text-sm text-muted-foreground">Buổi học</p>
+          </div>
+          <div className="text-center p-4 bg-muted/50 rounded-lg">
+            <div className="text-3xl font-bold text-orange-600 mb-1">0</div>
+            <p className="text-sm text-muted-foreground">Câu hỏi AI</p>
           </div>
         </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Children Management */}
-          <Link
-            href="/children"
-            className="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 border-2 border-transparent hover:border-blue-500"
-          >
-            <div className="flex items-center mb-4">
-              <div className="bg-blue-100 rounded-full p-3">
-                <span className="text-2xl">👶</span>
-              </div>
-              <h2 className="ml-3 text-xl font-semibold text-gray-900">
-                Quản lý con
-              </h2>
-            </div>
-            <p className="text-gray-600">Tạo và quản lý profiles cho các bé</p>
-          </Link>
-
-          {/* Subscription */}
-          <Link
-            href="/subscription"
-            className="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 border-2 border-transparent hover:border-purple-500"
-          >
-            <div className="flex items-center mb-4">
-              <div className="bg-purple-100 rounded-full p-3">
-                <span className="text-2xl">💳</span>
-              </div>
-              <h2 className="ml-3 text-xl font-semibold text-gray-900">
-                Gói đăng ký
-              </h2>
-            </div>
-            <p className="text-gray-600">Quản lý gói subscription của bạn</p>
-          </Link>
-
-          {/* Find Tutors */}
-          <Link
-            href="/tutors"
-            className="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 border-2 border-transparent hover:border-green-500"
-          >
-            <div className="flex items-center mb-4">
-              <div className="bg-green-100 rounded-full p-3">
-                <span className="text-2xl">👨‍🏫</span>
-              </div>
-              <h2 className="ml-3 text-xl font-semibold text-gray-900">
-                Tìm gia sư
-              </h2>
-            </div>
-            <p className="text-gray-600">Kết nối với gia sư phù hợp</p>
-          </Link>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="mt-8 bg-white rounded-xl shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Thống kê nhanh
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <p className="text-3xl font-bold text-blue-600">0</p>
-              <p className="text-gray-600 mt-1">Profiles trẻ</p>
-            </div>
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
-              <p className="text-3xl font-bold text-purple-600">FREE</p>
-              <p className="text-gray-600 mt-1">Gói hiện tại</p>
-            </div>
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <p className="text-3xl font-bold text-green-600">0</p>
-              <p className="text-gray-600 mt-1">Buổi học đã đặt</p>
-            </div>
-          </div>
-        </div>
-      </main>
+      </Card>
     </div>
   );
 }

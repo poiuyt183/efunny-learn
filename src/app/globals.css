@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -9,8 +9,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: "Inter", sans-serif;
-  --font-body: "Inter", sans-serif;
+  --font-heading: "Lexend", sans-serif;
+  --font-body: "Lexend", sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -113,6 +113,10 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+button {
+  cursor: pointer;
 }
 
 @layer base {
@@ -232,4 +236,142 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ============================================
+   CLAYMORPHISM DESIGN SYSTEM
+   Educational Platform - Playful & Professional
+   ============================================ */
+
+:root {
+  /* Claymorphism Color Palette */
+  --color-clay-primary: #4F46E5;
+  --color-clay-secondary: #818CF8;
+  --color-clay-cta: #F97316;
+  --color-clay-bg-soft: #EEF2FF;
+  --color-clay-text: #1E1B4B;
+  --color-clay-text-muted: #475569;
+  
+  /* Claymorphism Shadows - Double shadow effect */
+  --shadow-clay-sm: 
+    0 2px 4px rgba(79, 70, 229, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5);
+  --shadow-clay-md: 
+    0 4px 8px rgba(79, 70, 229, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6);
+  --shadow-clay-lg: 
+    0 8px 16px rgba(79, 70, 229, 0.2),
+    inset 0 2px 6px rgba(255, 255, 255, 0.7);
+  --shadow-clay-xl: 
+    0 12px 24px rgba(79, 70, 229, 0.25),
+    inset 0 3px 8px rgba(255, 255, 255, 0.8);
+  
+  /* Claymorphism Border Radius */
+  --radius-clay: 20px;
+  --radius-clay-sm: 12px;
+  --radius-clay-lg: 24px;
+  
+  /* Claymorphism Border Width */
+  --border-clay: 3px;
+  --border-clay-thick: 4px;
+}
+
+/* Claymorphism Card Component */
+.clay-card {
+  background: white;
+  border-radius: var(--radius-clay);
+  border: var(--border-clay) solid rgba(79, 70, 229, 0.1);
+  box-shadow: var(--shadow-clay-md);
+  transition: all 200ms ease-out;
+  cursor: pointer;
+}
+
+.clay-card:hover {
+  box-shadow: var(--shadow-clay-lg);
+  transform: translateY(-2px);
+  border-color: rgba(79, 70, 229, 0.2);
+}
+
+.clay-card:active {
+  transform: translateY(0px);
+  box-shadow: var(--shadow-clay-sm);
+}
+
+/* Claymorphism Button Component */
+.clay-button {
+  background: var(--color-clay-cta);
+  color: white;
+  padding: 12px 24px;
+  border-radius: var(--radius-clay-sm);
+  border: var(--border-clay) solid rgba(249, 115, 22, 0.3);
+  box-shadow: var(--shadow-clay-md);
+  font-weight: 600;
+  font-family: "Lexend", sans-serif;
+  transition: all 200ms ease-out;
+  cursor: pointer;
+}
+
+.clay-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-clay-lg);
+}
+
+.clay-button:active {
+  transform: translateY(1px);
+  box-shadow: var(--shadow-clay-sm);
+}
+
+/* Soft Purple Gradient Backgrounds */
+.gradient-purple-soft {
+  background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 50%, #FCE7F3 100%);
+}
+
+.gradient-purple-vibrant {
+  background: linear-gradient(135deg, #818CF8 0%, #A78BFA 50%, #C084FC 100%);
+}
+
+/* Claymorphism Icon Container */
+.clay-icon-container {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-clay-sm);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+/* Floating Navbar */
+.floating-navbar {
+  border-radius: var(--radius-clay);
+  box-shadow: var(--shadow-clay-md);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(79, 70, 229, 0.1);
+}
+
+/* Typography Utilities */
+.font-heading {
+  font-family: "Lexend", sans-serif;
+}
+
+.font-body {
+  font-family: "Lexend", sans-serif;
+}
+
+/* Stats Card */
+.clay-stat-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(238, 242, 255, 0.8) 100%);
+  border-radius: var(--radius-clay-sm);
+  border: var(--border-clay) solid rgba(79, 70, 229, 0.15);
+  box-shadow: var(--shadow-clay-sm);
+  padding: 24px;
+  text-align: center;
+  transition: all 200ms ease-out;
+}
+
+.clay-stat-card:hover {
+  box-shadow: var(--shadow-clay-md);
+  transform: translateY(-2px);
 }
