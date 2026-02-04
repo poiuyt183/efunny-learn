@@ -1,13 +1,17 @@
 "use client"
 
+import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
+import { LogOut } from "lucide-react";
 import { redirect } from "next/navigation";
 
-export function SignoutButton() {
+export function SignoutButton({ title }: { title?: string }) {
 
     return (
-        <button
-            className="text-gray-600 hover:text-gray-900 font-medium"
+        <Button
+            variant={"ghost"}
+            size={"sm"}
+            // className="text-gray-600 hover:text-gray-900 font-medium"
             onClick={async () => {
                 await authClient.signOut({
                     fetchOptions: {
@@ -18,8 +22,9 @@ export function SignoutButton() {
                 });
             }}
         >
-            Đăng xuất
-        </button>
+            <LogOut className="h-4 w-4" />
+            {title ? <span className="ml-2">{title}</span> : null}
+        </Button>
     )
 
 }

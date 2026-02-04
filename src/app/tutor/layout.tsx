@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { checkIsTutor } from "@/features/tutor/actions/tutor-actions";
 import { Spinner } from "@/components/ui/spinner";
+import { authClient } from "@/lib/auth-client";
+import { SignoutButton } from "@/features/auth/components/signout-button";
 
 export default async function TutorLayout({
     children,
@@ -120,7 +122,7 @@ export default async function TutorLayout({
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem asChild>
-                                <Link href="/api/auth/sign-out">Đăng xuất</Link>
+                                <SignoutButton title="Đăng xuất" />
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

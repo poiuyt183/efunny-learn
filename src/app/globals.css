@@ -1,4 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext,vietnamese");
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext,vietnamese");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -375,3 +376,42 @@ button {
   box-shadow: var(--shadow-clay-md);
   transform: translateY(-2px);
 }
+
+/* ============================================
+   LANDING PAGE UTILITIES
+   ============================================ */
+
+:root {
+  --font-landing-heading: "Lexend", system-ui, -apple-system, sans-serif;
+  --font-landing-body: "Lexend", system-ui, -apple-system, sans-serif;
+}
+
+.font-landing-heading {
+  font-family: var(--font-landing-heading);
+}
+
+.font-landing-body {
+  font-family: var(--font-landing-body);
+}
+
+/* Landing page animations */
+@keyframes wave {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(10deg);
+  }
+  75% {
+    transform: rotate(-10deg);
+  }
+}
+
+.animate-wave {
+  animation: wave 1s ease-in-out;
+}
+
+.animate-wave-infinite {
+  animation: wave 2s ease-in-out infinite;
+}
+

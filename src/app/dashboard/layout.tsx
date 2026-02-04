@@ -12,6 +12,7 @@ import {
     LogOut,
     Menu,
 } from "lucide-react";
+import { SignoutButton } from "@/features/auth/components/signout-button";
 
 export default async function DashboardLayout({
     children,
@@ -66,11 +67,7 @@ export default async function DashboardLayout({
                                 <p className="font-medium">{session.user.name}</p>
                                 <p className="text-xs text-muted-foreground">{session.user.email}</p>
                             </div>
-                            <form action="/api/auth/sign-out" method="POST">
-                                <Button variant="ghost" size="sm">
-                                    <LogOut className="h-4 w-4" />
-                                </Button>
-                            </form>
+                            <SignoutButton />
                         </div>
                     </div>
 
