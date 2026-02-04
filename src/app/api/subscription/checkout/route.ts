@@ -1,41 +1,68 @@
-import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-utils";
-import { sepay } from "@/lib/sepay";
+import db from "@/lib/db";
 
 const checkoutSchema = z.object({
   tier: z.enum(["BASIC", "PREMIUM"]),
 });
 
 const PRICING = {
-  BASIC: 200000,
-  PREMIUM: 500000,
+  BASIC: 2000,
+  PREMIUM: 5000,
 };
 
 export async function POST(req: Request) {
   try {
     const session = await requireAuth();
-    const headersList = await headers();
     const body = await req.json();
-
     const validated = checkoutSchema.parse(body);
-    const amount = PRICING[validated.tier];
 
-    // Create a unique order ID
-    // Format: SUBS_{userId}_{timestamp}
-    const orderId = `SUBS_${session.user.id.slice(0, 8)}_${Date.now()}`;
-    const ipAddr = headersList.get("x-forwarded-for") || "127.0.0.1";
+    const tier = validated.tier;
+    const amount = PRICING[tier];
 
-    const paymentUrl = sepay.buildPaymentUrl({
-      amount,
-      orderId,
-      orderInfo: `Thanh toan goi ${validated.tier} cho user ${session.user.email}`,
-      ipAddr,
-      locale: "vi",
+    // Create a unique order ID (only letters and numbers for bank compatibility)
+    // Format: SUBSuseridtimestamp (no special characters)
+    const cleanUserId = session.user.id.replace(/[^a-zA-Z0-9]/g, '');
+    const orderId = `SUBS${cleanUserId}${Date.now()}`;
+
+    // Lưu pending payment vào database để track
+    await db.paymentHistory.create({
+      data: {
+        userId: session.user.id,
+        tier,
+        amount,
+        vnpayTransactionId: orderId,
+        vnpayOrderId: orderId,
+        status: "PENDING",
+      },
     });
 
-    return NextResponse.json({ url: paymentUrl });
+    console.log("💳 Created payment order:", {
+      orderId,
+      userId: session.user.id,
+      cleanUserId,
+      tier,
+      amount,
+    });
+
+    // Build QR code URL
+    const bankAccount = process.env.SO_TAI_KHOAN || "";
+    const bankName = process.env.NGAN_HANG || "";
+    const description = orderId; // Dùng orderId làm nội dung chuyển khoản
+
+    const qrCodeUrl = `https://qr.sepay.vn/img?acc=${bankAccount}&bank=${bankName}&amount=${amount}&des=${description}`;
+    console.log({ qrCodeUrl })
+
+    return NextResponse.json({
+      orderId,
+      amount,
+      qrCodeUrl,
+      bankAccount,
+      bankName,
+      description,
+      tier,
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.issues }, { status: 400 });
@@ -43,7 +70,7 @@ export async function POST(req: Request) {
 
     console.error("Checkout error:", error);
     return NextResponse.json(
-      { error: "Failed to create payment URL" },
+      { error: "Failed to create payment" },
       { status: 500 },
     );
   }

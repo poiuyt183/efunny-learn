@@ -7,8 +7,8 @@ import bcrypt from "bcryptjs";
 
 interface CreateChildAccountInput {
     childId: string;
-    email: string;
-    password: string;
+    username: string;
+    pin: string;
 }
 
 /**
@@ -41,24 +41,26 @@ export async function createChildAccount(input: CreateChildAccountInput) {
             throw new Error("Con đã có tài khoản");
         }
 
-        // Check if email is already used
-        const existingUser = await prisma.user.findUnique({
-            where: { email: input.email },
-        });
+        // Check if username is already used
+        if (input.username) {
+            const existingChild = await prisma.child.findUnique({
+                where: { username: input.username },
+            });
 
-        if (existingUser) {
-            throw new Error("Email đã được sử dụng");
+            if (existingChild) {
+                throw new Error("Tên đăng nhập đã được sử dụng");
+            }
         }
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(input.password, 10);
+        // Hash PIN
+        const hashedPin = await bcrypt.hash(input.pin, 10);
 
-        // Create user account for child
+        // Create user account for child (keeping email for compatibility)
         const childUser = await prisma.user.create({
             data: {
                 id: `child-${child.id}`,
                 name: child.name,
-                email: input.email,
+                email: `${input.username}@child.local`, // Use a placeholder email
                 emailVerified: true, // Auto-verify since parent created it
                 role: "CHILD",
                 updatedAt: new Date(),
@@ -72,24 +74,26 @@ export async function createChildAccount(input: CreateChildAccountInput) {
                 accountId: childUser.id,
                 providerId: "credential",
                 userId: childUser.id,
-                password: hashedPassword,
+                password: hashedPin,
                 createdAt: new Date(),
                 updatedAt: new Date(),
             },
         });
 
-        // Link child profile to user account
+        // Link child profile to user account and save username/PIN
         await prisma.child.update({
             where: { id: input.childId },
             data: {
                 childUserId: childUser.id,
+                username: input.username,
+                pin: hashedPin,
             },
         });
 
         return {
             success: true,
             data: {
-                email: input.email,
+                username: input.username,
                 childId: child.id,
             },
         };
@@ -136,7 +140,7 @@ export async function checkChildHasAccount(childId: string) {
             success: true,
             data: {
                 hasAccount: !!child.childUserId,
-                email: child.childUser?.email,
+                username: child.username,
             },
         };
     } catch (error) {

@@ -29,12 +29,17 @@ import { UserPlus, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 
 const createAccountSchema = z.object({
-    email: z.string().email("Email không hợp lệ"),
-    password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
-    confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-    message: "Mật khẩu không khớp",
-    path: ["confirmPassword"],
+    username: z.string()
+        .min(3, "Tên đăng nhập phải có ít nhất 3 ký tự")
+        .max(20, "Tên đăng nhập không được quá 20 ký tự")
+        .regex(/^[a-z0-9_]+$/, "Tên đăng nhập chỉ được chứa chữ thường, số và dấu gạch dưới"),
+    pin: z.string()
+        .length(4, "Mã PIN phải có đúng 4 chữ số")
+        .regex(/^\d{4}$/, "Mã PIN chỉ được chứa số"),
+    confirmPin: z.string(),
+}).refine((data) => data.pin === data.confirmPin, {
+    message: "Mã PIN không khớp",
+    path: ["confirmPin"],
 });
 
 type CreateAccountInput = z.infer<typeof createAccountSchema>;
@@ -51,15 +56,15 @@ export function CreateChildAccountDialog({
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const [credentials, setCredentials] = useState<{ email: string; password: string }>();
+    const [credentials, setCredentials] = useState<{ username: string; pin: string }>();
     const [copied, setCopied] = useState(false);
 
     const form = useForm<CreateAccountInput>({
         resolver: zodResolver(createAccountSchema),
         defaultValues: {
-            email: "",
-            password: "",
-            confirmPassword: "",
+            username: "",
+            pin: "",
+            confirmPin: "",
         },
     });
 
@@ -68,13 +73,13 @@ export function CreateChildAccountDialog({
 
         const result = await createChildAccount({
             childId,
-            email: data.email,
-            password: data.password,
+            username: data.username,
+            pin: data.pin,
         });
 
         if (result.success) {
             setSuccess(true);
-            setCredentials({ email: data.email, password: data.password });
+            setCredentials({ username: data.username, pin: data.pin });
             toast.success("Tạo tài khoản thành công!");
         } else {
             toast.error(result.error || "Có lỗi xảy ra");
@@ -85,7 +90,7 @@ export function CreateChildAccountDialog({
 
     const handleCopy = () => {
         if (credentials) {
-            const text = `Tài khoản học tập của ${childName}\nEmail: ${credentials.email}\nMật khẩu: ${credentials.password}\nĐăng nhập tại: ${window.location.origin}/learn/login`;
+            const text = `Tài khoản học tập của ${childName}\nTên đăng nhập: ${credentials.username}\nMã PIN: ${credentials.pin}\nĐăng nhập tại: ${window.location.origin}/learn/login`;
             navigator.clipboard.writeText(text);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
@@ -114,7 +119,7 @@ export function CreateChildAccountDialog({
                 <DialogHeader>
                     <DialogTitle>Tạo tài khoản học tập cho {childName}</DialogTitle>
                     <DialogDescription>
-                        Tạo tài khoản để {childName} có thể đăng nhập và sử dụng AI Linh vật độc lập
+                        Tạo tên đăng nhập và mã PIN để {childName} có thể đăng nhập và sử dụng AI Linh vật độc lập
                     </DialogDescription>
                 </DialogHeader>
 
@@ -128,12 +133,12 @@ export function CreateChildAccountDialog({
                                     </p>
                                     <div className="bg-white p-3 rounded border border-green-200 space-y-2">
                                         <div>
-                                            <p className="text-xs text-muted-foreground">Email</p>
-                                            <p className="font-mono text-sm">{credentials.email}</p>
+                                            <p className="text-xs text-muted-foreground">Tên đăng nhập</p>
+                                            <p className="font-mono text-sm">{credentials.username}</p>
                                         </div>
                                         <div>
-                                            <p className="text-xs text-muted-foreground">Mật khẩu</p>
-                                            <p className="font-mono text-sm">{credentials.password}</p>
+                                            <p className="text-xs text-muted-foreground">Mã PIN</p>
+                                            <p className="font-mono text-sm">{credentials.pin}</p>
                                         </div>
                                         <div>
                                             <p className="text-xs text-muted-foreground">Đăng nhập tại</p>
@@ -141,7 +146,7 @@ export function CreateChildAccountDialog({
                                         </div>
                                     </div>
                                     <p className="text-xs text-green-800">
-                                        ⚠️ Hãy lưu lại thông tin này! Bạn sẽ không thể xem lại mật khẩu.
+                                        ⚠️ Hãy lưu lại thông tin này! Bạn sẽ không thể xem lại mã PIN.
                                     </p>
                                 </div>
                             </AlertDescription>
@@ -171,20 +176,20 @@ export function CreateChildAccountDialog({
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                             <FormField
                                 control={form.control}
-                                name="email"
+                                name="username"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Email đăng nhập</FormLabel>
+                                        <FormLabel>Tên đăng nhập</FormLabel>
                                         <FormControl>
                                             <Input
-                                                type="email"
-                                                placeholder="email@example.com"
+                                                type="text"
+                                                placeholder="vidu123"
                                                 {...field}
                                                 disabled={loading}
                                             />
                                         </FormControl>
                                         <FormDescription className="text-xs">
-                                            Email này sẽ được dùng để đăng nhập vào trang /learn/login
+                                            Chỉ được chứa chữ thường, số và dấu gạch dưới (3-20 ký tự)
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>
@@ -193,14 +198,15 @@ export function CreateChildAccountDialog({
 
                             <FormField
                                 control={form.control}
-                                name="password"
+                                name="pin"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Mật khẩu</FormLabel>
+                                        <FormLabel>Mã PIN (4 chữ số)</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="password"
-                                                placeholder="Tối thiểu 6 ký tự"
+                                                placeholder="1234"
+                                                maxLength={4}
                                                 {...field}
                                                 disabled={loading}
                                             />
@@ -212,14 +218,15 @@ export function CreateChildAccountDialog({
 
                             <FormField
                                 control={form.control}
-                                name="confirmPassword"
+                                name="confirmPin"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Xác nhận mật khẩu</FormLabel>
+                                        <FormLabel>Xác nhận mã PIN</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="password"
-                                                placeholder="Nhập lại mật khẩu"
+                                                placeholder="Nhập lại mã PIN"
+                                                maxLength={4}
                                                 {...field}
                                                 disabled={loading}
                                             />
@@ -231,8 +238,8 @@ export function CreateChildAccountDialog({
 
                             <Alert>
                                 <AlertDescription className="text-xs">
-                                    💡 <strong>Lưu ý:</strong> Hãy chọn email và mật khẩu đơn giản để con bạn
-                                    dễ nhớ. Bạn có thể đổi mật khẩu sau.
+                                    💡 <strong>Lưu ý:</strong> Hãy chọn tên đăng nhập và mã PIN đơn giản để con bạn
+                                    dễ nhớ. Bạn có thể đổi mã PIN sau.
                                 </AlertDescription>
                             </Alert>
 

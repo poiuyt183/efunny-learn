@@ -149,6 +149,8 @@ model Child {
   userId          String         // Parent's user ID
   childUserId     String?        @unique // Child's own user account (optional)
   name            String
+  username        String?        @unique // Username for login instead of email
+  pin             String?        // PIN code (hashed) instead of password
   grade           Int            // 6-12
   birthYear       Int
   spiritAnimalId  String

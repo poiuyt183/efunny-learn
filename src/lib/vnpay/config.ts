@@ -1,14 +1,9 @@
 import crypto from "crypto";
 
-if (!process.env.VNPAY_TMN_CODE || !process.env.VNPAY_HASH_SECRET) {
-  throw new Error(
-    "Missing VNPay configuration. Please set VNPAY_TMN_CODE and VNPAY_HASH_SECRET",
-  );
-}
-
+// VNPay config is optional - we're using SEPay for payments
 export const VNPAY_CONFIG = {
-  tmnCode: process.env.VNPAY_TMN_CODE,
-  hashSecret: process.env.VNPAY_HASH_SECRET,
+  tmnCode: process.env.VNPAY_TMN_CODE || "",
+  hashSecret: process.env.VNPAY_HASH_SECRET || "",
   apiUrl:
     process.env.VNPAY_API_URL ||
     "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction",
@@ -68,6 +63,10 @@ export const SUBSCRIPTION_PLANS = {
 } as const;
 
 export type SubscriptionTier = keyof typeof SUBSCRIPTION_PLANS;
+
+export function getTierDisplayName(tier: SubscriptionTier): string {
+  return SUBSCRIPTION_PLANS[tier].name;
+}
 
 export const MARKETPLACE_FEE_PERCENT = 20; // Platform takes 20% from tutor bookings
 

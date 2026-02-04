@@ -2,18 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Sparkles, Mail, Lock } from "lucide-react";
+import { Sparkles, User, Lock } from "lucide-react";
+import { signInChild } from "@/features/children/actions/child-auth-actions";
 
 export default function ChildLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [pin, setPin] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -23,26 +23,19 @@ export default function ChildLoginPage() {
     setError("");
 
     try {
-      const { data, error } = await authClient.signIn.email({
-        email,
-        password,
+      const result = await signInChild({
+        username,
+        pin,
       });
 
-      if (error) {
-        setError(error.message || "Đăng nhập thất bại");
-        setLoading(false);
-        return;
-      }
-
-      // Check if user is a child
-      if (data?.user?.role !== "CHILD") {
-        setError("Tài khoản này không phải là tài khoản học sinh");
-        await authClient.signOut();
+      if (!result.success) {
+        setError(result.error || "Đăng nhập thất bại");
         setLoading(false);
         return;
       }
 
       router.push("/learn");
+      router.refresh();
     } catch (err) {
       setError("Có lỗi xảy ra");
       setLoading(false);
@@ -72,15 +65,15 @@ export default function ChildLoginPage() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="username">Tên đăng nhập</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="email@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="username"
+                  type="text"
+                  placeholder="vidu123"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="pl-10"
                   required
                   disabled={loading}
@@ -89,15 +82,16 @@ export default function ChildLoginPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Mật khẩu</Label>
+              <Label htmlFor="pin">Mã PIN</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  id="password"
+                  id="pin"
                   type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••"
+                  maxLength={4}
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value)}
                   className="pl-10"
                   required
                   disabled={loading}

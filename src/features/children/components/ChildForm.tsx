@@ -78,7 +78,18 @@ export function ChildForm({ spiritAnimals, onSuccess }: ChildFormProps) {
                 toast.success("Đã thêm hồ sơ con thành công!");
                 onSuccess?.();
             } else {
-                toast.error(result.error || "Có lỗi xảy ra");
+                // Check if it's a limit error
+                if ('limitReached' in result && result.limitReached) {
+                    toast.error(result.error || "Đã đạt giới hạn profile", {
+                        description: "Vui lòng nâng cấp gói để thêm nhiều profile hơn",
+                        action: {
+                            label: "Nâng cấp",
+                            onClick: () => window.location.href = "/dashboard/subscription",
+                        },
+                    });
+                } else {
+                    toast.error(result.error || "Có lỗi xảy ra");
+                }
             }
         });
     };

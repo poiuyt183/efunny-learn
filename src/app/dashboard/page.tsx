@@ -10,6 +10,9 @@ import {
   Calendar,
   TrendingUp,
 } from "lucide-react";
+import prisma from "@/lib/db";
+import { SubscriptionStatusCard } from "@/features/subscription/components/SubscriptionStatusCard";
+import type { SubscriptionTier } from "@/lib/vnpay/config";
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({
@@ -25,6 +28,18 @@ export default async function DashboardPage() {
     redirect("/tutor/dashboard");
   }
 
+  // Get user data with subscription and children
+  const userData = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    include: {
+      subscription: true,
+      children: true,
+    },
+  });
+
+  const tier = (userData?.subscription?.tier || "FREE") as SubscriptionTier;
+  const childrenCount = userData?.children.length || 0;
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       {/* Welcome Section */}
@@ -37,9 +52,14 @@ export default async function DashboardPage() {
 
       {/* Main Navigation Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {/* Subscription Status Card */}
+        <div className="md:col-span-2 lg:col-span-1">
+          <SubscriptionStatusCard tier={tier} currentChildren={childrenCount} />
+        </div>
+
         {/* Children Management */}
         <Link href="/dashboard/children">
-          <Card className="p-6 hover:shadow-lg transition-all cursor-pointer group">
+          <Card className="p-6 hover:shadow-lg transition-all cursor-pointer group h-full">
             <div className="flex items-start mb-4">
               <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                 <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -126,11 +146,11 @@ export default async function DashboardPage() {
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="text-center p-4 bg-muted/50 rounded-lg">
-            <div className="text-3xl font-bold text-blue-600 mb-1">0</div>
+            <div className="text-3xl font-bold text-blue-600 mb-1">{childrenCount}</div>
             <p className="text-sm text-muted-foreground">Profiles con</p>
           </div>
           <div className="text-center p-4 bg-muted/50 rounded-lg">
-            <div className="text-3xl font-bold text-purple-600 mb-1">FREE</div>
+            <div className="text-3xl font-bold text-purple-600 mb-1">{tier}</div>
             <p className="text-sm text-muted-foreground">Gói hiện tại</p>
           </div>
           <div className="text-center p-4 bg-muted/50 rounded-lg">

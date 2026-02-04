@@ -26,7 +26,7 @@ export default async function ChildDetailPage({ params }: ChildDetailPageProps) 
     // Check if child has account
     const accountResult = await checkChildHasAccount(id);
     const hasAccount = accountResult.success && accountResult.data?.hasAccount;
-    const childEmail = accountResult.data?.email;
+    const childUsername = accountResult.data?.username;
 
     const currentYear = new Date().getFullYear();
     const age = currentYear - child.birthYear;
@@ -89,13 +89,13 @@ export default async function ChildDetailPage({ params }: ChildDetailPageProps) 
                         </div>
 
                         {/* Account Info */}
-                        {hasAccount && childEmail ? (
+                        {hasAccount && childUsername ? (
                             <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
                                 <p className="text-sm text-green-900 dark:text-green-100">
-                                    📧 Tài khoản: <span className="font-mono font-semibold">{childEmail}</span>
+                                    👤 Tên đăng nhập: <span className="font-mono font-semibold">{childUsername}</span>
                                 </p>
                                 <p className="text-xs text-green-700 dark:text-green-300 mt-1">
-                                    Con bạn có thể đăng nhập tại <span className="font-semibold">/learn/login</span>
+                                    Con bạn có thể đăng nhập bằng tên đăng nhập và mã PIN tại <span className="font-semibold">/learn/login</span>
                                 </p>
                             </div>
                         ) : (

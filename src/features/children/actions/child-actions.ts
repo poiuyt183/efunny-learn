@@ -11,6 +11,7 @@ import {
     type ChildUpdateInput,
 } from "../schemas/child-schema";
 import { revalidatePath } from "next/cache";
+import { checkChildProfileLimit } from "@/lib/rate-limit";
 
 /**
  * Create child profile
@@ -23,6 +24,18 @@ export async function createChild(input: ChildInput) {
 
         if (!session?.user) {
             throw new Error("Unauthorized");
+        }
+
+        // Check child profile limit based on subscription
+        const limitCheck = await checkChildProfileLimit(session.user.id);
+        if (!limitCheck.allowed) {
+            return {
+                success: false,
+                error: `Bạn đã đạt giới hạn ${limitCheck.limit} profile con với gói ${limitCheck.tier}. Vui lòng nâng cấp gói để thêm profile.`,
+                limitReached: true,
+                currentTier: limitCheck.tier,
+                limit: limitCheck.limit,
+            };
         }
 
         // Validate input

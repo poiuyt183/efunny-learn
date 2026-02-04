@@ -35,29 +35,8 @@ export function SubscriptionActions({
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
-    const handleUpgrade = async () => {
-        try {
-            setLoading(true);
-            const res = await fetch("/api/subscription/checkout", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ tier }),
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data.error || "Failed to initiate payment");
-            }
-
-            if (data.url) {
-                window.location.href = data.url;
-            }
-        } catch (error) {
-            toast.error("Không thể tạo thanh toán. Vui lòng thử lại sau.");
-            console.error(error);
-            setLoading(false);
-        }
+    const handleUpgrade = () => {
+        router.push(`/dashboard/subscription/checkout?tier=${tier}`);
     };
 
     const handleDowngrade = async () => {
