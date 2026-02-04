@@ -122,6 +122,26 @@ export class VNPay {
         };
     }
 
+    /**
+     * Simple verify return URL - returns true if signature is valid
+     */
+    verifyReturnUrl(params: Record<string, string>): boolean {
+        const secureHash = params["vnp_SecureHash"];
+        const vnpParams = { ...params };
+
+        // Remove hash params to rebuild signature
+        delete vnpParams["vnp_SecureHash"];
+        delete vnpParams["vnp_SecureHashType"];
+
+        // Sort to rebuild signature
+        const sortedParams = this.sortObject(vnpParams);
+        const signData = qs.stringify(sortedParams);
+        const hmac = createHmac("sha512", this.config.hashSecret);
+        const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
+
+        return secureHash === signed;
+    }
+
     private sortObject(obj: Record<string, any>) {
         const sorted: Record<string, any> = {};
         const keys = Object.keys(obj).sort();

@@ -56,6 +56,7 @@ model user {
   account       account[]
   session       session[]
   subscription  Subscription?
+  paymentHistory PaymentHistory[]
   children      Child[]       @relation("ParentChildren")
   childProfile  Child?        @relation("ChildAccount")
   tutor         Tutor?
@@ -111,6 +112,32 @@ enum SubscriptionStatus {
   CANCELLED
   PAST_DUE
   TRIALING
+}
+
+model PaymentHistory {
+  id                    String            @id @default(cuid())
+  userId                String
+  tier                  SubscriptionTier
+  amount                Int               // Amount in VND
+  vnpayTransactionId    String            @unique
+  vnpayOrderId          String
+  vnpayBankCode         String?
+  status                PaymentStatus     @default(PENDING)
+  paidAt                DateTime?
+  createdAt             DateTime          @default(now())
+  
+  user                  user              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
 }
 
 // ============================================
