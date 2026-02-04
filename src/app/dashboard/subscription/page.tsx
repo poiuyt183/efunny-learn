@@ -152,10 +152,8 @@ export default async function SubscriptionPage({
                         ["FREE", "BASIC"].includes(currentSubscription.tier) &&
                         tier.name !== "FREE" &&
                         tier.name !== currentSubscription.tier;
-                    const canDowngrade = currentSubscription &&
-                        ["BASIC", "PREMIUM"].includes(currentSubscription.tier) &&
-                        tier.name !== currentSubscription.tier &&
-                        tier.name !== "PREMIUM";
+                    // Downgrade is disabled - users can only upgrade or cancel
+                    const canDowngrade = false;
 
                     return (
                         <Card

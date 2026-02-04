@@ -133,67 +133,14 @@ export async function upgradeSubscription(tier: SubscriptionTier) {
 }
 
 /**
- * Downgrade subscription tier
+ * Downgrade subscription tier - DISABLED
+ * Users cannot downgrade their subscription. They can only cancel.
  */
 export async function downgradeSubscription(tier: SubscriptionTier) {
-    try {
-        const session = await auth.api.getSession({
-            headers: await headers(),
-        });
-
-        if (!session?.user) {
-            return {
-                success: false,
-                error: "Unauthorized",
-            };
-        }
-
-        const subscription = await prisma.subscription.findUnique({
-            where: {
-                userId: session.user.id,
-            },
-        });
-
-        if (!subscription) {
-            return {
-                success: false,
-                error: "Không tìm thấy subscription",
-            };
-        }
-
-        // Check if downgrading
-        const tierOrder = { FREE: 0, BASIC: 1, PREMIUM: 2 };
-        if (tierOrder[subscription.tier as SubscriptionTier] <= tierOrder[tier]) {
-            return {
-                success: false,
-                error: "Bạn đang ở gói thấp hơn hoặc bằng",
-            };
-        }
-
-        // Update subscription
-        const updated = await prisma.subscription.update({
-            where: {
-                userId: session.user.id,
-            },
-            data: {
-                tier,
-                status: "ACTIVE",
-            },
-        });
-
-        revalidatePath("/dashboard/subscription");
-
-        return {
-            success: true,
-            data: updated,
-            message: "Đã hạ cấp gói thành công",
-        };
-    } catch (error) {
-        return {
-            success: false,
-            error: error instanceof Error ? error.message : "Có lỗi xảy ra",
-        };
-    }
+    return {
+        success: false,
+        error: "Không thể hạ cấp gói. Vui lòng hủy gói hiện tại nếu muốn chuyển về gói FREE.",
+    };
 }
 
 /**

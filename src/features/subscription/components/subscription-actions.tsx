@@ -120,31 +120,12 @@ export function SubscriptionActions({
         );
     }
 
-    // Can downgrade - show downgrade button with confirmation
+    // Downgrade is disabled - users cannot downgrade
     if (canDowngrade) {
         return (
-            <AlertDialog>
-                <AlertDialogTrigger asChild>
-                    <Button variant="outline" className="w-full" disabled={loading}>
-                        Chuyển sang gói này
-                    </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Xác nhận hạ cấp</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Bạn có chắc chắn muốn chuyển từ gói {currentTier} sang gói {tier}?
-                            Một số tính năng sẽ bị giới hạn.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Đóng</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDowngrade} disabled={loading}>
-                            {loading ? "Đang xử lý..." : "Xác nhận"}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <Button className="w-full" variant="outline" disabled title="Không thể hạ cấp gói">
+                Không khả dụng
+            </Button>
         );
     }
 
