@@ -49,7 +49,7 @@ export function SubscriptionActions({
                 return;
             }
 
-            toast.success(result.message || "Đã hạ cấp gói thành công");
+            toast.success(result.error || "Đã hạ cấp gói thành công");
             router.refresh();
         } catch (error) {
             toast.error("Có lỗi xảy ra. Vui lòng thử lại sau.");

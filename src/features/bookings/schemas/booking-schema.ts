@@ -4,7 +4,7 @@ export const createBookingSchema = z.object({
     childId: z.string().min(1, "Vui lòng chọn con"),
     tutorId: z.string().min(1, "Vui lòng chọn gia sư"),
     scheduledAt: z.date({
-        required_error: "Vui lòng chọn thời gian",
+        error: "Vui lòng chọn thời gian",
     }),
     durationMinutes: z.number().min(60).max(180),
     notes: z.string().optional(),

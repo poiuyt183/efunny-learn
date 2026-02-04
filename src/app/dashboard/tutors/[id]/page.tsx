@@ -57,7 +57,7 @@ export default async function TutorDetailPage({
                                 {/* Avatar */}
                                 <div className="flex-shrink-0">
                                     <div className="h-24 w-24 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white text-3xl font-bold">
-                                        {tutor.user.name.charAt(0)}
+                                        {session.user.name.charAt(0)}
                                     </div>
                                 </div>
 
@@ -66,7 +66,7 @@ export default async function TutorDetailPage({
                                     <div className="flex items-start justify-between mb-4">
                                         <div>
                                             <h1 className="text-3xl font-bold flex items-center gap-3">
-                                                {tutor.user.name}
+                                                {session.user.name}
                                                 {tutor.verified && (
                                                     <Badge className="bg-green-600">
                                                         <CheckCircle className="w-3 h-3 mr-1" />

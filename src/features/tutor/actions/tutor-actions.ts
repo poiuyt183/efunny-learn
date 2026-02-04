@@ -360,7 +360,7 @@ export async function getTutorById(id: string) {
                     },
                     select: {
                         id: true,
-                        rating: true,
+                        notes: true,
                     },
                 },
             },

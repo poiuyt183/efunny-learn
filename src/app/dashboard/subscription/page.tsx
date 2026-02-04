@@ -206,7 +206,7 @@ export default async function SubscriptionPage({
                                 <SubscriptionActions
                                     tier={tier.name}
                                     isCurrentTier={isCurrentTier}
-                                    canUpgrade={canUpgrade}
+                                    canUpgrade={Boolean(canUpgrade)}
                                     canDowngrade={canDowngrade}
                                     currentTier={currentSubscription?.tier as "FREE" | "BASIC" | "PREMIUM"}
                                 />
