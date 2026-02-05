@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle, XCircle, Loader2, Home, Calendar } from "lucide-react";
 import { cancelBookingPayment } from "@/features/bookings/actions/payment-actions";
 
-export default function BookingPaymentReturnPage() {
+function PaymentReturnContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [status, setStatus] = useState<"processing" | "success" | "failed">("processing");
@@ -129,5 +129,21 @@ export default function BookingPaymentReturnPage() {
                 </CardContent>
             </Card>
         </div>
+    );
+}
+
+export default function BookingPaymentReturnPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center p-4 bg-muted/30">
+                <Card className="max-w-md w-full">
+                    <CardContent className="py-12 text-center">
+                        <Loader2 className="h-16 w-16 text-primary animate-spin mx-auto" />
+                    </CardContent>
+                </Card>
+            </div>
+        }>
+            <PaymentReturnContent />
+        </Suspense>
     );
 }

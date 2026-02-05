@@ -21,7 +21,7 @@ import { cancelBooking } from "../actions/booking-actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-type BookingStatus = "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED" | "REFUNDED";
+type BookingStatus = "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED" | "REFUNDED" | "PENDING_PAYMENT";
 
 interface BookingCardProps {
     booking: {
@@ -51,6 +51,7 @@ const STATUS_CONFIG = {
     COMPLETED: { label: "Hoàn thành", color: "bg-green-500" },
     CANCELLED: { label: "Đã hủy", color: "bg-gray-500" },
     REFUNDED: { label: "Đã hoàn tiền", color: "bg-purple-500" },
+    PENDING_PAYMENT: { label: "Chờ thanh toán", color: "bg-orange-500" },
 };
 
 export function BookingCard({ booking }: BookingCardProps) {

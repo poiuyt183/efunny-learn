@@ -62,7 +62,7 @@ export async function POST(req: Request) {
                 orderId,
                 userId: session.user.id,
                 bookingIds: [], // Will update after creating bookings
-                totalAmount: 5000,
+                totalAmount,
                 status: "PENDING",
             },
         });
@@ -121,7 +121,7 @@ export async function POST(req: Request) {
             bookingCount: bookings.length,
             bookingIds: bookings.map(b => b.id),
             childName: child.name,
-            tutorName: tutor.user?.name || "Gia sư",
+            tutorName: session.user?.name || "Gia sư",
             durationMinutes: validated.durationMinutes,
             amountPerSession: Math.round(amountPerSession),
         });
