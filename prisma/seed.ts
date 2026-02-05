@@ -58,6 +58,60 @@ const spiritAnimals = [
   },
 ];
 
+// Parent seed data with different timestamps (last 6 months)
+const parents = [
+  {
+    email: "parent1@example.com",
+    name: "Trần Minh Hoàng",
+    createdAt: new Date("2025-08-10T08:30:00Z"), // August 2025
+  },
+  {
+    email: "parent2@example.com",
+    name: "Nguyễn Thị Hương",
+    createdAt: new Date("2025-08-25T14:15:00Z"), // August 2025
+  },
+  {
+    email: "parent3@example.com",
+    name: "Phạm Văn Đức",
+    createdAt: new Date("2025-09-12T09:45:00Z"), // September 2025
+  },
+  {
+    email: "parent4@example.com",
+    name: "Lê Thị Lan Anh",
+    createdAt: new Date("2025-09-28T11:20:00Z"), // September 2025
+  },
+  {
+    email: "parent5@example.com",
+    name: "Hoàng Quốc Tuấn",
+    createdAt: new Date("2025-10-15T16:00:00Z"), // October 2025
+  },
+  {
+    email: "parent6@example.com",
+    name: "Vũ Thị Mai",
+    createdAt: new Date("2025-10-30T10:30:00Z"), // October 2025
+  },
+  {
+    email: "parent7@example.com",
+    name: "Đỗ Văn Long",
+    createdAt: new Date("2025-11-18T13:45:00Z"), // November 2025
+  },
+  {
+    email: "parent8@example.com",
+    name: "Bùi Thị Thu Hà",
+    createdAt: new Date("2025-12-05T07:20:00Z"), // December 2025
+  },
+  {
+    email: "parent9@example.com",
+    name: "Ngô Minh Tuấn",
+    createdAt: new Date("2025-12-22T15:30:00Z"), // December 2025
+  },
+  {
+    email: "parent10@example.com",
+    name: "Phan Thị Kim Ngân",
+    createdAt: new Date("2026-01-28T09:00:00Z"), // January 2026
+  },
+];
+
 const tutors = [
   {
     email: "tutor1@example.com",
@@ -73,6 +127,7 @@ const tutors = [
     ],
     rating: 4.8,
     totalSessions: 45,
+    createdAt: new Date("2025-08-08T10:00:00Z"), // August 2025
   },
   {
     email: "tutor2@example.com",
@@ -89,6 +144,7 @@ const tutors = [
     ],
     rating: 4.9,
     totalSessions: 89,
+    createdAt: new Date("2025-08-20T14:30:00Z"), // August 2025
   },
   {
     email: "tutor3@example.com",
@@ -104,6 +160,7 @@ const tutors = [
     ],
     rating: 4.7,
     totalSessions: 32,
+    createdAt: new Date("2025-09-05T09:15:00Z"), // September 2025
   },
   {
     email: "tutor4@example.com",
@@ -118,6 +175,7 @@ const tutors = [
     ],
     rating: 4.6,
     totalSessions: 56,
+    createdAt: new Date("2025-09-22T11:45:00Z"), // September 2025
   },
   {
     email: "tutor5@example.com",
@@ -133,6 +191,7 @@ const tutors = [
     ],
     rating: 4.8,
     totalSessions: 67,
+    createdAt: new Date("2025-10-10T13:20:00Z"), // October 2025
   },
   {
     email: "tutor6@example.com",
@@ -149,6 +208,7 @@ const tutors = [
     ],
     rating: 4.9,
     totalSessions: 103,
+    createdAt: new Date("2025-10-25T08:00:00Z"), // October 2025
   },
   {
     email: "tutor7@example.com",
@@ -164,6 +224,7 @@ const tutors = [
     ],
     rating: 4.7,
     totalSessions: 41,
+    createdAt: new Date("2025-11-12T15:30:00Z"), // November 2025
   },
   {
     email: "tutor8@example.com",
@@ -179,6 +240,7 @@ const tutors = [
     ],
     rating: 4.6,
     totalSessions: 28,
+    createdAt: new Date("2025-11-28T10:20:00Z"), // November 2025
   },
   {
     email: "tutor9@example.com",
@@ -194,6 +256,7 @@ const tutors = [
     ],
     rating: 4.8,
     totalSessions: 78,
+    createdAt: new Date("2025-12-15T12:45:00Z"), // December 2025
   },
   {
     email: "tutor10@example.com",
@@ -210,6 +273,7 @@ const tutors = [
     ],
     rating: 5.0,
     totalSessions: 156,
+    createdAt: new Date("2026-01-20T16:00:00Z"), // January 2026
   },
 ];
 
@@ -227,6 +291,29 @@ async function main() {
     console.log(`✅ Created/Updated: ${created.name} (${created.slug})`);
   }
 
+  // Seed Parents
+  console.log("\n👨‍👩‍👧‍👦 Seeding Parents...");
+  for (const parentData of parents) {
+    const parent = await prisma.user.upsert({
+      where: { email: parentData.email },
+      update: {
+        name: parentData.name,
+        role: "PARENT",
+        updatedAt: parentData.createdAt,
+      },
+      create: {
+        id: `parent_${parentData.email.split("@")[0]}`,
+        email: parentData.email,
+        name: parentData.name,
+        emailVerified: true,
+        role: "PARENT",
+        createdAt: parentData.createdAt,
+        updatedAt: parentData.createdAt,
+      },
+    });
+    console.log(`✅ Created/Updated: ${parent.name} (${parent.email}) - Created: ${parentData.createdAt.toLocaleDateString()}`);
+  }
+
   // Seed Tutors
   console.log("\n👨‍🏫 Seeding Tutors...");
   for (const tutorData of tutors) {
@@ -236,7 +323,7 @@ async function main() {
       update: {
         name: tutorData.name,
         role: "TUTOR",
-        updatedAt: new Date(),
+        updatedAt: tutorData.createdAt,
       },
       create: {
         id: `tutor_${tutorData.email.split("@")[0]}`,
@@ -244,7 +331,8 @@ async function main() {
         name: tutorData.name,
         emailVerified: true,
         role: "TUTOR",
-        updatedAt: new Date(),
+        createdAt: tutorData.createdAt,
+        updatedAt: tutorData.createdAt,
       },
     });
 
@@ -276,7 +364,7 @@ async function main() {
       },
     });
 
-    console.log(`✅ Created/Updated: ${user.name} - ${tutor.subjects.join(", ")}`);
+    console.log(`✅ Created/Updated: ${user.name} - ${tutor.subjects.join(", ")} - Created: ${tutorData.createdAt.toLocaleDateString()}`);
   }
 
   console.log("\n✨ Seed completed!");

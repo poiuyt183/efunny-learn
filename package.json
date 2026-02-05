@@ -11,7 +11,8 @@
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
     "seed": "tsx prisma/seed.ts",
-    "create-test-parent": "tsx scripts/create-test-parent.ts"
+    "create-test-parent": "tsx scripts/create-test-parent.ts",
+    "create-admin": "tsx scripts/create-admin.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.16",
