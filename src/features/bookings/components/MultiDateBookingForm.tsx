@@ -55,6 +55,7 @@ export function MultiDateBookingForm({ tutorId, hourlyRate }: MultiDateBookingFo
         resolver: zodResolver(createBookingPaymentSchema),
         defaultValues: {
             tutorId,
+            childId: "",
             durationMinutes: 60,
             scheduledDates: [],
             timeSlot: "",
@@ -74,6 +75,12 @@ export function MultiDateBookingForm({ tutorId, hourlyRate }: MultiDateBookingFo
         console.log({ result })
         if (result.success && result.data) {
             setChildren(result.data);
+            // Auto-select first child if only one exists
+            if (result.data.length === 1) {
+                form.setValue("childId", result.data[0].id);
+            }
+        } else {
+            toast.error(result.error || "Không thể tải danh sách con");
         }
     };
 
@@ -99,6 +106,11 @@ export function MultiDateBookingForm({ tutorId, hourlyRate }: MultiDateBookingFo
     };
 
     const onSubmit = async (data: CreateBookingPaymentInput) => {
+        if (!data.childId) {
+            toast.error("Vui lòng chọn con");
+            return;
+        }
+
         if (selectedDates.length === 0) {
             toast.error("Vui lòng chọn ít nhất 1 ngày học");
             return;
@@ -109,18 +121,18 @@ export function MultiDateBookingForm({ tutorId, hourlyRate }: MultiDateBookingFo
             return;
         }
 
-        setLoading(true);
+        // Build checkout URL with query params
+        const params = new URLSearchParams({
+            childId: data.childId,
+            tutorId: data.tutorId,
+            dates: selectedDates.map(d => d.toISOString()).join(','),
+            time: data.timeSlot,
+            duration: data.durationMinutes.toString(),
+            ...(data.notes && { notes: data.notes }),
+        });
 
-        const result = await createBookingPayment(data);
-
-        if (result.success && result.paymentUrl) {
-            toast.success("Đang chuyển đến trang thanh toán...");
-            // Redirect to payment gateway
-            window.location.href = result.paymentUrl;
-        } else {
-            toast.error(result.error || "Có lỗi xảy ra");
-            setLoading(false);
-        }
+        // Redirect to checkout page
+        router.push(`/bookings/checkout?${params.toString()}`);
     };
 
     const watchDuration = form.watch("durationMinutes");
@@ -150,13 +162,29 @@ export function MultiDateBookingForm({ tutorId, hourlyRate }: MultiDateBookingFo
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {children.map((child) => (
-                                                <SelectItem key={child.id} value={child.id}>
-                                                    {child.name} - Lớp {child.grade}
-                                                </SelectItem>
-                                            ))}
+                                            {children.length === 0 ? (
+                                                <div className="px-2 py-6 text-center text-sm text-muted-foreground">
+                                                    Chưa có profile con. Vui lòng tạo profile con trước.
+                                                </div>
+                                            ) : (
+                                                children.map((child) => (
+                                                    <SelectItem key={child.id} value={child.id}>
+                                                        {child.name} - Lớp {child.grade}
+                                                    </SelectItem>
+                                                ))
+                                            )}
                                         </SelectContent>
                                     </Select>
+                                    <FormDescription>
+                                        {children.length === 0 && (
+                                            <span className="text-orange-600">
+                                                Bạn cần tạo profile con trước khi đặt lịch.{" "}
+                                                <a href="/dashboard/children" className="underline hover:text-orange-700">
+                                                    Tạo profile con
+                                                </a>
+                                            </span>
+                                        )}
+                                    </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -346,11 +374,11 @@ export function MultiDateBookingForm({ tutorId, hourlyRate }: MultiDateBookingFo
                                 ? "Đang xử lý..."
                                 : selectedDates.length === 0
                                     ? "Chọn ngày để tiếp tục"
-                                    : `Thanh toán và đặt ${selectedDates.length} buổi học`}
+                                    : `Tiếp tục thanh toán ${selectedDates.length} buổi học`}
                         </Button>
                         {selectedDates.length > 0 && (
                             <p className="text-xs text-muted-foreground text-center">
-                                Bạn sẽ được chuyển đến trang thanh toán để hoàn tất
+                                Bạn sẽ được chuyển đến trang thanh toán
                             </p>
                         )}
                     </form>

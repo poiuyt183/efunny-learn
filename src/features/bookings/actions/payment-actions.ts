@@ -5,18 +5,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { SEPay } from "@/lib/sepay";
 import { calculatePlatformFee } from "@/lib/vnpay/config";
-import { z } from "zod";
-
-export const createBookingPaymentSchema = z.object({
-    childId: z.string().min(1),
-    tutorId: z.string().min(1),
-    scheduledDates: z.array(z.date()).min(1),
-    timeSlot: z.string().min(1),
-    durationMinutes: z.number().min(60).max(180),
-    notes: z.string().optional(),
-});
-
-export type CreateBookingPaymentInput = z.infer<typeof createBookingPaymentSchema>;
+import { createBookingPaymentSchema, type CreateBookingPaymentInput } from "../schemas/booking-schema";
 
 /**
  * Tạo pending bookings và redirect đến payment gateway

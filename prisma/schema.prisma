@@ -57,6 +57,7 @@ model user {
   session       session[]
   subscription  Subscription?
   paymentHistory PaymentHistory[]
+  bookingPayments BookingPayment[]
   children      Child[]       @relation("ParentChildren")
   childProfile  Child?        @relation("ChildAccount")
   tutor         Tutor?
@@ -281,15 +282,18 @@ model Booking {
   status             BookingStatus @default(PENDING_PAYMENT)
   vnpayTransactionId String?       // VNPay payment transaction ID
   notes              String?       @db.Text
+  paymentId          String?       // BookingPayment relation
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
   
   child              Child         @relation(fields: [childId], references: [id])
   tutor              Tutor         @relation(fields: [tutorId], references: [id])
+  payment            BookingPayment? @relation("BookingPaymentBookings", fields: [paymentId], references: [id])
 
   @@index([childId])
   @@index([tutorId])
   @@index([scheduledAt])
+  @@index([paymentId])
 }
 
 model BookingPayment {
@@ -302,6 +306,9 @@ model BookingPayment {
   transactionId  String?             // SEPay transaction ID
   createdAt      DateTime            @default(now())
   completedAt    DateTime?
+  
+  user           user                @relation(fields: [userId], references: [id])
+  bookings       Booking[]           @relation("BookingPaymentBookings")
   
   @@index([orderId])
   @@index([userId])
