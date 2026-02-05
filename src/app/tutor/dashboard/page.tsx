@@ -1,9 +1,11 @@
 import { redirect } from "next/navigation";
 import { checkIsTutor, getTutorProfile, getTutorStats } from "@/features/tutor/actions/tutor-actions";
+import { getTutorBookings } from "@/features/bookings/actions/booking-actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TutorProfileForm } from "@/features/tutor/components/TutorProfileForm";
+import { TutorScheduleCalendar } from "@/features/bookings/components/TutorScheduleCalendar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default async function TutorDashboardPage() {
@@ -17,6 +19,7 @@ export default async function TutorDashboardPage() {
     // Get tutor profile and stats
     const profileResult = await getTutorProfile();
     const statsResult = await getTutorStats();
+    const bookingsResult = await getTutorBookings();
 
     if (!profileResult.success || !profileResult.data) {
         redirect("/tutor/setup");
@@ -24,6 +27,7 @@ export default async function TutorDashboardPage() {
 
     const tutor = profileResult.data;
     const stats = statsResult.success ? statsResult.data : null;
+    const bookings = bookingsResult.success ? bookingsResult.data : [];
 
     return (
         <div className="container mx-auto max-w-7xl py-10 px-4">
@@ -214,19 +218,7 @@ export default async function TutorDashboardPage() {
                 </TabsContent>
 
                 <TabsContent value="schedule" className="space-y-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Lịch dạy</CardTitle>
-                            <CardDescription>
-                                Quản lý lịch giảng dạy của bạn
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-sm text-muted-foreground">
-                                Chức năng đang được phát triển...
-                            </p>
-                        </CardContent>
-                    </Card>
+                    <TutorScheduleCalendar bookings={bookings || []} />
                 </TabsContent>
 
                 <TabsContent value="students" className="space-y-4">

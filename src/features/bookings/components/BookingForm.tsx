@@ -64,8 +64,12 @@ export function BookingForm({ tutorId, hourlyRate }: BookingFormProps) {
         loadChildren();
     }, []);
 
+    console.log({ children })
+
+
     const loadChildren = async () => {
         const result = await getChildren();
+        console.log({ result })
         if (result.success && result.data) {
             setChildren(result.data);
         }

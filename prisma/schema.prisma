@@ -278,7 +278,7 @@ model Booking {
   durationMinutes    Int           // 60, 90, 120
   totalAmount        Int           // VND
   platformFee        Int           // 20% of totalAmount
-  status             BookingStatus @default(PENDING)
+  status             BookingStatus @default(PENDING_PAYMENT)
   vnpayTransactionId String?       // VNPay payment transaction ID
   notes              String?       @db.Text
   createdAt          DateTime      @default(now())
@@ -292,10 +292,32 @@ model Booking {
   @@index([scheduledAt])
 }
 
+model BookingPayment {
+  id             String              @id @default(cuid())
+  orderId        String              @unique
+  userId         String
+  bookingIds     String[]            // Array of booking IDs
+  totalAmount    Int                 // Total payment amount in VND
+  status         BookingPaymentStatus @default(PENDING)
+  transactionId  String?             // SEPay transaction ID
+  createdAt      DateTime            @default(now())
+  completedAt    DateTime?
+  
+  @@index([orderId])
+  @@index([userId])
+}
+
 enum BookingStatus {
+  PENDING_PAYMENT  // Chờ thanh toán
+  PENDING          // Đã thanh toán, chờ gia sư xác nhận
+  CONFIRMED        // Gia sư đã xác nhận
+  COMPLETED        // Đã hoàn thành
+  CANCELLED        // Đã hủy
+  REFUNDED         // Đã hoàn tiền
+}
+
+enum BookingPaymentStatus {
   PENDING
-  CONFIRMED
   COMPLETED
   CANCELLED
-  REFUNDED
 }

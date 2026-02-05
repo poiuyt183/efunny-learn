@@ -3,9 +3,11 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { getTutorById } from "@/features/tutor/actions/tutor-actions";
 import { BookingForm } from "@/features/bookings/components/BookingForm";
+import { MultiDateBookingForm } from "@/features/bookings/components/MultiDateBookingForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
     GraduationCap,
     Star,
@@ -181,7 +183,18 @@ export default async function TutorDetailPage({
                 {/* Right Column - Booking Form */}
                 <div className="lg:col-span-1">
                     <div className="sticky top-4">
-                        <BookingForm tutorId={tutor.id} hourlyRate={tutor.hourlyRate} />
+                        <Tabs defaultValue="single" className="w-full">
+                            <TabsList className="grid w-full grid-cols-2">
+                                <TabsTrigger value="single">Đặt 1 ngày</TabsTrigger>
+                                <TabsTrigger value="multiple">Đặt nhiều ngày</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="single" className="mt-4">
+                                <BookingForm tutorId={tutor.id} hourlyRate={tutor.hourlyRate} />
+                            </TabsContent>
+                            <TabsContent value="multiple" className="mt-4">
+                                <MultiDateBookingForm tutorId={tutor.id} hourlyRate={tutor.hourlyRate} />
+                            </TabsContent>
+                        </Tabs>
                     </div>
                 </div>
             </div>
